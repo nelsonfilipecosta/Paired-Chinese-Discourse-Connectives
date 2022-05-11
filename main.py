@@ -842,7 +842,7 @@ ml("F:\comp 490\gold standard\Vectors\TrainDataGold.xlsx", "F:\comp 490\gold sta
 
 ############################################## Linguistic references embedding ######################################
 """
-dictionary1 = dic("F:\comp 490\connectives dictionary.txt", "F:\comp 490\Discontinues DC dictionary.txt")
+dictionary1 = dic("F:\comp 490\connectives dictionary.txt", "F:\comp 490\connectives dictionary_modified.txt.txt")
 
 dictionary2 = dic("F:\comp 490\dictionary.txt", "F:\comp 490\dictionary of DCs_modified.txt")
 
