@@ -742,7 +742,7 @@ from gensim.models import KeyedVectors
 import openpyxl
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
-from sklearn import metrics 
+from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
 from sklearn.neural_network import MLPClassifier
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
@@ -754,7 +754,7 @@ writen = open("F:\comp 490\TestCorpora.txt", "w", encoding='utf-8')
 print("Dic1")
 dic1Lst1, dic1Lstone = dic_preprocessing("connectives dictionary")
 print("Dic2")
-dic1Lst2, dic1Lsttwo = dic_preprocessing("dictionary")
+dic1Lst2, dic1Lsttwo = dic_preprocessing("dictionary of DCs")
 print("intersection")
 inter = intersection(dic1Lst1, dic1Lst2)
 inter = intersection(dic1Lstone, dic1Lsttwo)
@@ -844,7 +844,7 @@ ml("F:\comp 490\gold standard\Vectors\TrainDataGold.xlsx", "F:\comp 490\gold sta
 """
 dictionary1 = dic("F:\comp 490\connectives dictionary.txt", "F:\comp 490\Discontinues DC dictionary.txt")
 
-dictionary2 = dic("F:\comp 490\dictionary.txt", "F:\comp 490\dictionary_modified.txt")
+dictionary2 = dic("F:\comp 490\dictionary.txt", "F:\comp 490\dictionary of DCs_modified.txt")
 
 # dictionaries union
 dic_union = union(dictionary1,dictionary2)
