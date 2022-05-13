@@ -250,26 +250,26 @@ def hypothesis(pairs,sheetName,dictionary,gold_standard = False):
                 check = True
                 b = str(pairs[ii]) + "\t\t" + "YES" + "\t"
                 llsstt.append("YES")
-                writen.write(b)
+                #writen.write(b)
                 yes += 1
             else:
                 no += 1
                 c = str(pairs[ii]) + "\t\t" + "_" + "\t"
                 llsstt.append("NO")
-                writen.write(c)
+                #writen.write(c)
         elif gold_standard:
             if pairs[ii][0] == dictionary[ii][0] and pairs[ii][1] == dictionary[ii][1] and dictionary[ii][2] == 'YES':
                 dictionaryCheck = True
                 check = True
                 b = str(pairs[ii]) + "\t\t" + "YES" + "\t"
                 llsstt.append("YES")
-                writen.write(b)
+                #writen.write(b)
                 yes += 1
             else:
                 no += 1
                 c = str(pairs[ii]) + "\t\t" + "_" + "\t"
                 llsstt.append("NO")
-                writen.write(c)
+                #writen.write(c)
         a0 = 0
         a1 = 0
         b0 = 0
@@ -318,7 +318,7 @@ def hypothesis(pairs,sheetName,dictionary,gold_standard = False):
             #  print('Dependent (reject H0)')
             temp1 = "Dependent" + "\t" + result + "\n"
             llsstt.append("Dependent")
-            writen.write(temp1)
+            #writen.write(temp1)
         else:
             Independent += 1
             if check == True:
@@ -330,7 +330,7 @@ def hypothesis(pairs,sheetName,dictionary,gold_standard = False):
             #  print('Independent (H0 holds true)')
             temp2 = "Independent" + "\t\t" + result + "\n"
             llsstt.append("Independent")
-            writen.write(temp2)
+            #writen.write(temp2)
         llsstt.append(tStat)
         llsstt.append(stat)
         llsstt.append(pairs[ii][2])
@@ -407,7 +407,7 @@ def hypothesis(pairs,sheetName,dictionary,gold_standard = False):
     print("accuracy: ", TPt+TNt,"/",TPt+FPt+FNt+TNt,"=",accuracyT)
     print("F measure:", FmeasureT,"\n\n")
     d = "YES: " + str(yes) + "\t" + "NO: " + str(no) + "\n\n"
-    writen.write(d)
+    #writen.write(d)
     return finalLst, sheetName
 
 def read_source(type):
@@ -429,10 +429,8 @@ def read_source(type):
     for i in contents:
         word = seperate(i)
         bound = ['!', '。', '？', '……']
-        if word[1] == "# newdoc id = chtb_":
-            writen.write("\n")
-        else:
-            writen.write(word[1] + " ")
+        if word[1] != "# newdoc id = chtb_":
+            #writen.write(word[1] + " ")
             seperateLst.append(word)
         if word[1] in bound:
             num_sentence += 1
@@ -748,7 +746,7 @@ from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
-writen = open("F:\comp 490\TestCorpora.txt", "w", encoding='utf-8')
+#writen = open("F:\comp 490\TestCorpora.txt", "w", encoding='utf-8')
 #################### Linguistic references pre processing #################################
 """
 print("Dic1")
