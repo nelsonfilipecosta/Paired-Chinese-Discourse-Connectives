@@ -1,7 +1,8 @@
 # Paired-Chinese-Discourse-Connectives
 Identification of paired Chinese discourse connectives.
 
+
 ## To Do
 
-* Clean and vectorize where possible legacy code in preprocess.py
-* Add more comments and function descriptions
+* **preprocess.py** : clean and vectorize where possible legacy code
+* **preprocess.py** : add more comments and function descriptions
