@@ -10,33 +10,100 @@ import scipy
 import scipy.stats
 
 
-ds_train = pd.read_csv('Datasets/dataset_train.csv', index_col=0)
-ds_test = pd.read_csv('Datasets/dataset_test.csv', index_col=0)
+def svm_param_search(kernel, C, gamma, coef0, degree, n_iter, cv, verbose):
+    '''
+    Perform a randomized search on SVM hyperparameters using K-fold cross validation. The hyperparameter search
+    is made for a specific SVM kernel defined in the input and it returns the best parameter configuration and
+    accuracy for the corresponding kernel.
+    '''
 
+    svm = sklearn.svm.SVC(kernel=kernel)
+
+    # define the parameter grid for each specific kernel
+    if kernel == 'linear':
+        param_distributions = {'C':C}
+    elif kernel == 'poly':
+        param_distributions = {'C':C, 'gamma':gamma, 'coef0':coef0, 'degree':degree}
+    elif kernel == 'rbf':
+        param_distributions = {'C':C, 'gamma':gamma}
+    elif kernel == 'sigmoid':
+        param_distributions = {'C':C, 'gamma':gamma, 'coef0':coef0}
+
+    clf = sklearn.model_selection.RandomizedSearchCV(svm, param_distributions, n_iter=n_iter, cv=cv, verbose=verbose)
+
+    clf.fit(X_train, y_train)
+
+    return clf.best_estimator_, clf.best_params_, clf.best_score_
+
+
+def svm_model_selection(kernels, C, gamma, coef0, degree, n_iter, cv, verbose):
+    '''
+    Select the best SVM model by performing a randomized search on hyperparameters using K-fold cross validation.
+    The best SVM model is determined by the kernel and corresponding parameter configuration that obtained the highest
+    value of accuracy on the hyperparameter search.
+    '''
+
+    print("\n")
+    print("Selecting best SVM Model")
+    print("\n")
+
+    accuracy = 0
+    
+    for i in kernels:
+        print("SVM Kernel: %s" % i)
+        best_estimator_, best_params_, best_score_ = svm_param_search(i, C, gamma, coef0, degree, n_iter, cv, verbose)
+    
+        if i == 'linear':
+            print("Best Hyperparameters: (C=%.2f)" % best_params_['C'])
+        elif i == 'poly':
+            print("Best Hyperparameters: (C=%.2f, gamma=%.2f, coef0=%.2f, degree=%d)" % (best_params_['C'], best_params_['gamma'], best_params_['coef0'], best_params_['degree']))
+        elif i == 'rbf':
+            print("Best Hyperparameters: (C=%.2f, gamma=%.2f)" % (best_params_['C'], best_params_['gamma']))
+        elif i == 'sigmoid':
+            print("Best Hyperparameters: (C=%.2f, gamma=%.2f, coef0=%.2f)" % (best_params_['C'], best_params_['gamma'], best_params_['coef0']))
+        
+        print("Accuracy Score: %.1f%%" % (best_score_*100))
+        print("\n")
+
+        if best_score_ > accuracy:
+            accuracy = best_score_
+            best_estimator = best_estimator_
+            best_kernel = i
+
+    print("Best SVM Kernel: %s" % best_kernel)
+    print("\n")
+
+    return best_estimator
+
+
+###############################################################################################################
+###############################################################################################################
+
+# prepare train data
+ds_train = pd.read_csv('Datasets/dataset_train.csv', index_col=0)
 X_train = ds_train.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
 y_train = ds_train['Annotation']
 
+# prepare test data
+ds_test = pd.read_csv('Datasets/dataset_test.csv', index_col=0)
 X_test = ds_test.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
 y_test = ds_test['Annotation']
 
 
+# global parameters
+n_iter  = 10   # number of parameters sampled in randomized search
+cv      = 2     # number of cross validation folds
+verbose = 1
 
-# tree = sklearn.tree.DecisionTreeClassifier(random_state=0, max_depth=10)
-# tree.fit(X_train,y_train)
+# svm specific parameters
+kernels = ['linear', 'poly', 'rbf', 'sigmoid']
+c       = scipy.stats.reciprocal(1, 1000)
+gamma   = scipy.stats.reciprocal(0.01, 10)
+coef0   = scipy.stats.reciprocal(0.01, 10)
+degree  = scipy.stats.randint(1, 10)
 
-# accuracy_train = sklearn.metrics.accuracy_score(y_train, tree.predict(X_train))
-# accuracy_test = sklearn.metrics.accuracy_score(y_test, tree.predict(X_test))
+# get the best parameter configuration for each machine learning model
+svm = svm_model_selection(kernels, c, gamma, coef0, degree, n_iter, cv, verbose)
 
-# print("training accuracy: %.1f%%" % (accuracy_train*100))
-# print("held-out accuracy (testing): %.1f%%" % (accuracy_test*100))
-
-
-
-svc = sklearn.svm.SVC(kernel='rbf')
-param_distributions = {'C':scipy.stats.reciprocal(1, 1000), 'gamma':scipy.stats.reciprocal(0.01, 10)}
-
-clf = sklearn.model_selection.RandomizedSearchCV(svc,param_distributions, n_iter=100, cv=3, random_state=0, verbose=1)
-clf.fit(X_train, y_train)
-
-print("Best Hyperparameters: (C=%.2f, gamma=%.2f)" % (clf.best_params_['C'], clf.best_params_['gamma']))
-print("Accuracy Score: %.1f%%" % (clf.best_score_*100))
+# print test accuracy for each machine learning model
+print("Test Accuracy for SVM model: %.1f%%" % (sklearn.metrics.accuracy_score(svm.predict(X_test), y_test)*100))
