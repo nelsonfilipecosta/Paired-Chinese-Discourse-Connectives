@@ -289,7 +289,7 @@ column_names = ['First_DC', 'Second_DC', 'Distance', 'Scenario', 'Embedding', 'E
 
 # preprocess datasets
 for i in ds_list:
-    print('Preparing %s dataset...' %i)
+    print("Preparing %s dataset..." %i)
 
     pairs = read_source(ctdb_filepath = 'CDTB/zho.pdtb.cdtb_%s.tok' %i,
                         emb_filepath  = 'Embedding/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt')
@@ -300,4 +300,4 @@ for i in ds_list:
 
     df.to_csv('Datasets/dataset_%s.csv' %i)
 
-    print('Done!')
+    print("Done!")
