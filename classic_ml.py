@@ -50,7 +50,7 @@ def svm_model_selection(kernels, C, gamma, coef0, degree, n_iter, cv, verbose):
     accuracy = 0
     
     for i in kernels:
-        print("SVM Kernel: %s" % i)
+        print("SVM: (kernel=%s)" % i)
         best_estimator_, best_params_, best_score_ = svm_param_search(i, C, gamma, coef0, degree, n_iter, cv, verbose)
     
         if i == 'linear':
@@ -115,8 +115,43 @@ def tree_model_selection(criterion, splitter, max_depth, n_iter, cv, verbose):
     return best_estimator
 
 
-###############################################################################################################
-###############################################################################################################
+def forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbose):
+    '''
+    Select the best Random forest model by performing a randomized search on hyperparameters using K-fold cross
+    validation. The best Random Forest model is determined by the parameter configuration that obtained the highest
+    value of accuracy on the hyperparameter search.
+    '''
+
+    print("\n")
+    print("Selecting best Random Forest model")
+    print("\n")
+
+    param_distributions = {'n_estimators':n_estimators, 'max_depth':max_depth}
+
+    accuracy = 0
+    
+    for i in criterion:
+        print("Random Forest: (criterion=%s)" % i)
+
+        forest = sklearn.ensemble.RandomForestClassifier(criterion=i)
+        
+        clf = sklearn.model_selection.RandomizedSearchCV(forest, param_distributions, n_iter=n_iter, cv=cv, verbose=verbose)
+        
+        clf.fit(X_train, y_train)
+
+        print("Best Hyperparameters: (n_estimators=%d, max_depth=%d)" % (clf.best_params_['n_estimators'], clf.best_params_['max_depth']))
+        print("Accuracy Score: %.1f%%" % (clf.best_score_*100))
+        print("\n")
+
+        if clf.best_score_ > accuracy:
+            accuracy = clf.best_score_
+            best_estimator = clf.best_estimator_
+            best_criterion = i
+            
+    print("Best Random Forest: %s" % best_criterion)
+
+    return best_estimator
+
 
 # prepare train data
 ds_train = pd.read_csv('Datasets/dataset_train.csv', index_col=0)
@@ -128,9 +163,8 @@ ds_test = pd.read_csv('Datasets/dataset_test.csv', index_col=0)
 X_test = ds_test.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
 y_test = ds_test['Annotation']
 
-
 # global parameters
-n_iter  = 10   # number of parameters sampled in randomized search
+n_iter  = 100   # number of parameters sampled in randomized search
 cv      = 2     # number of cross validation folds
 verbose = 1
 
@@ -144,17 +178,19 @@ degree  = scipy.stats.randint(1, 10)
 # decision tree specific parameters
 criterion = ['gini', 'entropy']
 splitter  = ['best', 'random']
-max_depth = scipy.stats.reciprocal(1, 1000)
+max_depth = scipy.stats.randint(1, 100)
 
 # random forest specific parameters
-n_estimators = scipy.stats.reciprocal(1, 1000)
+n_estimators = scipy.stats.randint(1, 100)
 
 # get the best parameter configuration for each machine learning model
 svm = svm_model_selection(kernels, c, gamma, coef0, degree, n_iter, cv, verbose)
 tree = tree_model_selection(criterion, splitter, max_depth, n_iter, cv, verbose)
+forest = forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbose)
 
 # print test accuracy for each machine learning model
 print("\n")
-print("Test Accuracy for SVM model: %.1f%%" % (sklearn.metrics.accuracy_score(svm.predict(X_test), y_test)*100))
-print("Test Accuracy for Decision Tree model: %.1f%%" % (sklearn.metrics.accuracy_score(tree.predict(X_test), y_test)*100))
+print("Test accuracy for SVM model: %.1f%%" % (sklearn.metrics.accuracy_score(svm.predict(X_test), y_test)*100))
+print("Test accuracy for Decision Tree model: %.1f%%" % (sklearn.metrics.accuracy_score(tree.predict(X_test), y_test)*100))
+print("Test accuracy for Random Forest model: %.1f%%" % (sklearn.metrics.accuracy_score(forest.predict(X_test), y_test)*100))
 print("\n")
