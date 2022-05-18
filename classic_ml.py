@@ -44,7 +44,7 @@ def svm_model_selection(kernels, C, gamma, coef0, degree, n_iter, cv, verbose):
     '''
 
     print("\n")
-    print("Selecting best SVM Model")
+    print("Selecting best SVM model")
     print("\n")
 
     accuracy = 0
@@ -71,7 +71,46 @@ def svm_model_selection(kernels, C, gamma, coef0, degree, n_iter, cv, verbose):
             best_kernel = i
 
     print("Best SVM Kernel: %s" % best_kernel)
+
+    return best_estimator
+
+
+def tree_model_selection(criterion, splitter, max_depth, n_iter, cv, verbose):
+    '''
+    Select the best Decision Tree model by performing a randomized search on hyperparameters using K-fold cross
+    validation. The best Decision Tree model is determined by the parameter configuration that obtained the highest
+    value of accuracy on the hyperparameter search.
+    '''
+
     print("\n")
+    print("Selecting best Decision Tree model")
+    print("\n")
+
+    param_distributions = {'max_depth':max_depth}
+
+    accuracy = 0
+    
+    for i in criterion:
+        for j in splitter:
+            print("Decision Tree: (criterion=%s, splitter=%s)" % (i, j))
+
+            tree = sklearn.tree.DecisionTreeClassifier(criterion=i, splitter=j)
+            
+            clf = sklearn.model_selection.RandomizedSearchCV(tree, param_distributions, n_iter=n_iter, cv=cv, verbose=verbose)
+            
+            clf.fit(X_train, y_train)
+
+            print("Best Hyperparameters: (max_depth=%d)" % clf.best_params_['max_depth'])
+            print("Accuracy Score: %.1f%%" % (clf.best_score_*100))
+            print("\n")
+
+            if clf.best_score_ > accuracy:
+                accuracy = clf.best_score_
+                best_estimator = clf.best_estimator_
+                best_criterion = i
+                best_splitter = j
+            
+    print("Best Decision Tree: (criterion=%s, splitter=%s)" % (best_criterion, best_splitter))
 
     return best_estimator
 
@@ -102,8 +141,20 @@ gamma   = scipy.stats.reciprocal(0.01, 10)
 coef0   = scipy.stats.reciprocal(0.01, 10)
 degree  = scipy.stats.randint(1, 10)
 
+# decision tree specific parameters
+criterion = ['gini', 'entropy']
+splitter  = ['best', 'random']
+max_depth = scipy.stats.reciprocal(1, 1000)
+
+# random forest specific parameters
+n_estimators = scipy.stats.reciprocal(1, 1000)
+
 # get the best parameter configuration for each machine learning model
 svm = svm_model_selection(kernels, c, gamma, coef0, degree, n_iter, cv, verbose)
+tree = tree_model_selection(criterion, splitter, max_depth, n_iter, cv, verbose)
 
 # print test accuracy for each machine learning model
+print("\n")
 print("Test Accuracy for SVM model: %.1f%%" % (sklearn.metrics.accuracy_score(svm.predict(X_test), y_test)*100))
+print("Test Accuracy for Decision Tree model: %.1f%%" % (sklearn.metrics.accuracy_score(tree.predict(X_test), y_test)*100))
+print("\n")
