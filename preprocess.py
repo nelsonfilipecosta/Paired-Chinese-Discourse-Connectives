@@ -183,7 +183,7 @@ def match(pairs, dictionary):
             pairs[i].append(j)
         for j in pairs[i][9]:
             pairs[i].append(j)
-        del pairs[i][6:10]
+        del pairs[i][4:10]
 
     return pairs
 
@@ -195,7 +195,7 @@ dfs = pd.read_excel('Dictionaries/gold_standard.xlsx', sheet_name=None, header=N
 ds_list = ['train', 'test', 'dev', 'devtest', 'cdtb']
 
 # list of column names for each dataset
-column_names = ['First_DC', 'Second_DC', 'Distance', 'Scenario', 'Embedding', 'Embedding_1', 'Annotation',
+column_names = ['First_DC', 'Second_DC', 'Distance', 'Scenario', 'Annotation',
                  'UnitA1', 'UnitA2', 'UnitA3', 'UnitA4', 'UnitA5', 'UnitA6', 'UnitA7', 'UnitA8', 'UnitA9', 'UnitA10',
                  'UnitA11', 'UnitA12', 'UnitA13', 'UnitA14', 'UnitA15', 'UnitA16', 'UnitA17', 'UnitA18', 'UnitA19', 'UnitA20',
                  'UnitA21', 'UnitA22', 'UnitA23', 'UnitA24', 'UnitA25', 'UnitA26', 'UnitA27', 'UnitA28', 'UnitA29', 'UnitA30',
