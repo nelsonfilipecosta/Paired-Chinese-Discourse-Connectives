@@ -292,7 +292,7 @@ for i in ds_list:
     print("Preparing %s dataset..." % i)
 
     pairs = read_source(ctdb_filepath = 'CDTB/zho.pdtb.cdtb_%s.tok' % i,
-                        emb_filepath  = 'Embedding/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt')
+                        emb_filepath  = 'Embeddings/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt')
 
     match_df = match(pairs, dfs[i])
 
