@@ -51,15 +51,13 @@ def read_source(filepath):
     return np.array(array)
 
 
-def generate_embedding(emb_filepath, raw_tokens):
+def generate_embedding(model, raw_tokens):
     '''
     Generates a 100-dimension vector embedding for the Chinese word in each token.
 
     Embedding obtained from Tencent AI Lab Embedding Corpus for Chinese Words and Phrases.
     https://ai.tencent.com/ailab/nlp/en/embedding.html
     '''
-
-    model = KeyedVectors.load_word2vec_format(emb_filepath, binary=False)
 
     embedded_tokens = []
 
@@ -131,17 +129,17 @@ def preprocess(padded_tokens, window):
 
 window = 20 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
 
-ds_list = ['train', 'test', 'dev']
+model = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt', binary=False)
 
-emb_filepath = 'Embedding/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt'
+ds_list = ['train', 'test', 'dev']
 
 for i in ds_list:
     print("Preparing %s dataset..." % i)
 
     raw_tokens          = read_source(filepath = 'CDTB-Modified/dzho.pdtb.cdtb_%s.tok' % i)
-    embedded_tokens     = generate_embedding(emb_filepath, raw_tokens)
+    embedded_tokens     = generate_embedding(model, raw_tokens)
     padded_tokens       = add_padding(embedded_tokens, window)
-    preprocessed_tokens = preprocess(padded_tokens)
+    preprocessed_tokens = preprocess(padded_tokens, window)
 
     df = pd.DataFrame(preprocessed_tokens)
 
