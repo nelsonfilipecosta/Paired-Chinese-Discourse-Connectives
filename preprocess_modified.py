@@ -94,7 +94,7 @@ def add_padding(embedded_tokens, window):
     return padded_tokens
 
 
-def preprocess(padded_tokens, window):
+def preprocess(embedded_tokens, window):
     '''
     Prepares token table into a format suitable for machine learning algorithms.
 
@@ -114,6 +114,8 @@ def preprocess(padded_tokens, window):
       ...]
     '''
 
+    padded_tokens = add_padding(embedded_tokens, window)
+
     feature_columns = []
     embedding_columns = padded_tokens[:, 2:-1]
 
@@ -127,7 +129,7 @@ def preprocess(padded_tokens, window):
     return np.hstack((feature_columns, label_column))
 
 
-window = 20 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
+window = 10 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
 
 model = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt', binary=False)
 
@@ -138,8 +140,7 @@ for i in ds_list:
 
     raw_tokens          = read_source(filepath = 'CDTB-Modified/dzho.pdtb.cdtb_%s.tok' % i)
     embedded_tokens     = generate_embedding(model, raw_tokens)
-    padded_tokens       = add_padding(embedded_tokens, window)
-    preprocessed_tokens = preprocess(padded_tokens, window)
+    preprocessed_tokens = preprocess(embedded_tokens, window)
 
     df = pd.DataFrame(preprocessed_tokens)
 
