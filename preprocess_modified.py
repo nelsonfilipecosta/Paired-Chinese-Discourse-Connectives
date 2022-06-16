@@ -53,7 +53,7 @@ def read_source(filepath):
 
 def generate_embedding(emb_filepath, raw_tokens):
     '''
-    Generates a 200-dimension vector embedding for the Chinese word in each token.
+    Generates a 100-dimension vector embedding for the Chinese word in each token.
 
     Embedding obtained from Tencent AI Lab Embedding Corpus for Chinese Words and Phrases.
     https://ai.tencent.com/ailab/nlp/en/embedding.html
@@ -67,7 +67,7 @@ def generate_embedding(emb_filepath, raw_tokens):
         if token[1] in model.index_to_key:
             token = np.append(token, model[token[1]])
         else:
-            token = np.append(token, np.zeros(200, dtype=int))
+            token = np.append(token, np.zeros(100, dtype=int))
         
         embedded_tokens.append(token)
 
@@ -102,16 +102,16 @@ def preprocess(padded_tokens, window):
 
     Input:
 
-    [[Index 1, Word 1, Embedding(Word 1) 1, Embedding(Word 1) 2, ..., Embedding(Word 1) 200, Label 1],
+    [[Index 1, Word 1, Embedding(Word 1) 1, Embedding(Word 1) 2, ..., Embedding(Word 1) 100, Label 1],
       ...,
-      Index N, Word N, Embedding(Word N) 1, Embedding(Word N) 2, ..., Embedding(Word N) 200, Label N]]
+      Index N, Word N, Embedding(Word N) 1, Embedding(Word N) 2, ..., Embedding(Word N) 100, Label N]]
     
     Output:
 
     [ ...,
-     [Embedding(Word i-window) 1, Embedding(Word i-window) 2, ... ,Embedding(Word i-window) 200,
-      Embedding(Word i) 1, ..., Embedding(Word i) 2, Embedding(Word i) 200,
-      Embedding(Word i+window) 1, Embedding(Word i+window) 2, ... ,Embedding(Word i+window) 200,
+     [Embedding(Word i-window) 1, Embedding(Word i-window) 2, ... ,Embedding(Word i-window) 100,
+      Embedding(Word i) 1, ..., Embedding(Word i) 2, Embedding(Word i) 100,
+      Embedding(Word i+window) 1, Embedding(Word i+window) 2, ... ,Embedding(Word i+window) 100,
       Label i],
       ...]
     '''
@@ -129,11 +129,11 @@ def preprocess(padded_tokens, window):
     return np.hstack((feature_columns, label_column))
 
 
-window = 10
+window = 20 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
 
 ds_list = ['train', 'test', 'dev']
 
-emb_filepath = 'Embedding/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt'
+emb_filepath = 'Embedding/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt'
 
 for i in ds_list:
     print("Preparing %s dataset..." % i)
