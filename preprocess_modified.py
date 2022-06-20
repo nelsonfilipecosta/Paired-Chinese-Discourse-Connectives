@@ -134,6 +134,8 @@ window = 10 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word dist
 model = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt', binary=False)
 
 ds_list = ['train', 'test', 'dev']
+ds_columns = [str(x) for x in list(range(0, 100*(2*window+1)))]
+ds_columns.append('label')
 
 for i in ds_list:
     print("Preparing %s dataset..." % i)
@@ -142,7 +144,7 @@ for i in ds_list:
     embedded_tokens     = generate_embedding(model, raw_tokens)
     preprocessed_tokens = preprocess(embedded_tokens, window)
 
-    df = pd.DataFrame(preprocessed_tokens)
+    df = pd.DataFrame(preprocessed_tokens, columns=ds_columns)
 
     df.to_csv('Datasets-Modified/dataset_%s.csv' % i, index=False)
 
