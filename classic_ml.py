@@ -154,14 +154,14 @@ def forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbo
 
 
 # prepare train data
-ds_train = pd.read_csv('Datasets/dataset_train.csv', index_col=0)
-X_train = ds_train.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
-y_train = ds_train['Annotation']
+ds_train = pd.read_csv('Datasets-Modified/dataset_train.csv', index_col=False)
+X_train = ds_train.drop(['label'], axis=1)
+y_train = ds_train['label']
 
 # prepare test data
-ds_test = pd.read_csv('Datasets/dataset_test.csv', index_col=0)
-X_test = ds_test.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
-y_test = ds_test['Annotation']
+ds_test = pd.read_csv('Datasets-Modified/dataset_test.csv', index_col=False)
+X_test = ds_test.drop(['label'], axis=1)
+y_test = ds_test['label']
 
 # global parameters
 n_iter  = 100   # number of parameters sampled in randomized search
