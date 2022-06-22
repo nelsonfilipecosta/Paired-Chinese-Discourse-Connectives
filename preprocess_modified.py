@@ -146,6 +146,8 @@ for i in ds_list:
 
     df = pd.DataFrame(preprocessed_tokens, columns=ds_columns)
 
+    df['label'].replace({'_': 0, 'Seg=B-D-Conn': 1, 'Seg=I-D-Conn': 1}, inplace=True)
+
     df.to_csv('Datasets-Modified/dataset_%s.csv' % i, index=False)
 
     print("Done!")
