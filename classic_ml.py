@@ -4,8 +4,8 @@ import sklearn
 import sklearn.svm
 import sklearn.tree
 import sklearn.ensemble
-import sklearn.metrics
 import sklearn.model_selection
+import sklearn.metrics
 import scipy
 import scipy.stats
 
@@ -154,28 +154,24 @@ def forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbo
 
 
 # prepare train data
-ds_train = pd.read_csv('Datasets/dataset_train.csv', index_col=0)
-X_train = ds_train.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
-y_train = ds_train['Annotation']
-# ds_train = pd.read_csv('Datasets-Modified/dataset_train.csv', index_col=False)
-# X_train = ds_train.drop(['label'], axis=1)
-# y_train = ds_train['label']
+ds_train = pd.read_csv('Datasets-Modified/dataset_train.csv', index_col=False)
+ds_train.dropna(inplace=True) # why do we have NaN?
+X_train = ds_train.drop(['label'], axis=1)
+y_train = ds_train['label'].astype('int')
 
 # prepare test data
-ds_test = pd.read_csv('Datasets/dataset_test.csv', index_col=0)
-X_test = ds_test.drop(['First_DC', 'Second_DC', 'Annotation'], axis=1)
-y_test = ds_test['Annotation']
-# ds_test = pd.read_csv('Datasets-Modified/dataset_test.csv', index_col=False)
-# X_test = ds_test.drop(['label'], axis=1)
-# y_test = ds_test['label']
+ds_test = pd.read_csv('Datasets-Modified/dataset_test.csv', index_col=False)
+ds_test.dropna(inplace=True) # why do we have NaN?
+X_test = ds_test.drop(['label'], axis=1)
+y_test = ds_test['label'].astype('int')
 
 # global parameters
-n_iter  = 100  # number of parameters sampled in randomized search
+n_iter  = 100   # number of parameters sampled in randomized search
 cv      = 2     # number of cross validation folds
 verbose = 1
 
 # svm specific parameters
-kernels = ['linear', 'poly', 'rbf', 'sigmoid']
+kernels = ['linear', 'rbf', 'sigmoid'] # ['linear', 'poly', 'rbf', 'sigmoid']
 c       = scipy.stats.reciprocal(1, 1000)
 gamma   = scipy.stats.reciprocal(0.01, 10)
 coef0   = scipy.stats.reciprocal(0.01, 10)
@@ -189,34 +185,25 @@ max_depth = scipy.stats.randint(1, 100)
 # random forest specific parameters
 n_estimators = scipy.stats.randint(1, 100)
 
-
+# get the best parameter configuration for each machine learning model
 svm = svm_model_selection(kernels, c, gamma, coef0, degree, n_iter, cv, verbose)
-print("\n")
-print("Accuracy for SVM model: %.1f%%" % (sklearn.metrics.accuracy_score(svm.predict(X_test), y_test)*100))
-# print("Precision for SVM model: %.1f%%" % (sklearn.metrics.precision_score(svm.predict(X_test), y_test)*100))
-# print("Recall for SVM model: %.1f%%" % (sklearn.metrics.recall_score(svm.predict(X_test), y_test)*100))
-# print("F1 Score for SVM model: %.1f%%" % (sklearn.metrics.f1_score(svm.predict(X_test), y_test)*100))
-print("\n")
-
 tree = tree_model_selection(criterion, splitter, max_depth, n_iter, cv, verbose)
-print("\n")
-print("Accuracy for for Decision Tree model: %.1f%%" % (sklearn.metrics.accuracy_score(tree.predict(X_test), y_test)*100))
-# print("Precision for Decision Tree model: %.1f%%" % (sklearn.metrics.precision_score(tree.predict(X_test), y_test)*100))
-# print("Recall for Decision Tree model: %.1f%%" % (sklearn.metrics.recall_score(tree.predict(X_test), y_test)*100))
-# print("F1 Score for Decision Tree model: %.1f%%" % (sklearn.metrics.f1_score(tree.predict(X_test), y_test)*100))
-print("\n")
-
 forest = forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbose)
-print("\n")
-print("Accuracy for for Random Forest model: %.1f%%" % (sklearn.metrics.accuracy_score(forest.predict(X_test), y_test)*100))
-# print("Precision for Random Forest model: %.1f%%" % (sklearn.metrics.precision_score(forest.predict(X_test), y_test)*100))
-# print("Recall for Random Forest model: %.1f%%" % (sklearn.metrics.recall_score(forest.predict(X_test), y_test)*100))
-# print("F1 Score for Random Forest model: %.1f%%" % (sklearn.metrics.f1_score(forest.predict(X_test), y_test)*100))
-print("\n")
 
-
-# print('\n')
-# print(ds_train['label'].value_counts(dropna=False))
-# print('\n')
-# print(ds_test['label'].value_counts(dropna=False))
-# print('\n')
+# print performance metrics for each machine learning model
+print("\n")
+print("Accuracy for SVM model: %.1f%%" % (sklearn.metrics.accuracy_score(y_test, svm.predict(X_test))*100))
+print("Precision for SVM model: %.1f%%" % (sklearn.metrics.precision_score(y_test, svm.predict(X_test))*100))
+print("Recall for SVM model: %.1f%%" % (sklearn.metrics.recall_score(y_test, svm.predict(X_test))*100))
+print("F1 Score for SVM model: %.1f%%" % (sklearn.metrics.f1_score(y_test, svm.predict(X_test))*100))
+print("\n")
+print("Accuracy for for Decision Tree model: %.1f%%" % (sklearn.metrics.accuracy_score(y_test, tree.predict(X_test))*100))
+print("Precision for Decision Tree model: %.1f%%" % (sklearn.metrics.precision_score(y_test, tree.predict(X_test))*100))
+print("Recall for Decision Tree model: %.1f%%" % (sklearn.metrics.recall_score(y_test, tree.predict(X_test))*100))
+print("F1 Score for Decision Tree model: %.1f%%" % (sklearn.metrics.f1_score(y_test, tree.predict(X_test))*100))
+print("\n")
+print("Accuracy for for Random Forest model: %.1f%%" % (sklearn.metrics.accuracy_score(y_test, forest.predict(X_test))*100))
+print("Precision for Random Forest model: %.1f%%" % (sklearn.metrics.precision_score(y_test, forest.predict(X_test))*100))
+print("Recall for Random Forest model: %.1f%%" % (sklearn.metrics.recall_score(y_test, forest.predict(X_test))*100))
+print("F1 Score for Random Forest model: %.1f%%" % (sklearn.metrics.f1_score(y_test, forest.predict(X_test))*100))
+print("\n")
