@@ -63,8 +63,13 @@ fnn.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.2, callba
 predict = np.argmax(fnn.predict(X_test), axis=-1)
 
 print("\n")
-print("Accuracy for FNN model:  %.1f%%" % (sklearn.metrics.accuracy_score(y_test, predict)*100))    # accuracy: (tp + tn) / (p + n)
-print("Precision for FNN model: %.1f%%" % (sklearn.metrics.precision_score(y_test, predict)*100))   # precision: tp / (tp + fp)
-print("Recall for FNN model:    %.1f%%" % (sklearn.metrics.recall_score(y_test, predict)*100))      # recall: tp / (tp + fn)
-print("F1 Score for FNN model:  %.1f%%" % (sklearn.metrics.f1_score(y_test, predict)*100))          # f1: 2 tp / (2 tp + fp + fn)
+print("Accuracy for FNN model:  %.1f%%" % (sklearn.metrics.accuracy_score(y_test, predict)*100))
+print("Precision for FNN model: %.1f%%" % (sklearn.metrics.precision_score(y_test, predict, average='macro')*100))
+print("Recall for FNN model:    %.1f%%" % (sklearn.metrics.recall_score(y_test, predict, average='macro')*100))
+print("F1 Score for FNN model:  %.1f%%" % (sklearn.metrics.f1_score(y_test, predict, average='macro')*100))
 print("\n")
+
+# accuracy: (tp + tn) / (p + n)
+# precision: tp / (tp + fp)
+# recall: tp / (tp + fn)
+# f1: 2 tp / (2 tp + fp + fn)
