@@ -27,7 +27,7 @@ def generate_fnn(optimizer, loss, metrics, dropout_rate, input_shape):
     model.add(keras.layers.Dropout(rate=dropout_rate))
     model.add(keras.layers.Dense(units=input_shape[1], activation='relu'))
     model.add(keras.layers.Dropout(rate=dropout_rate))
-    model.add(keras.layers.Dense(units=2, activation='softmax'))            # 3-way classification: not dc, dc or paired dc
+    model.add(keras.layers.Dense(units=3, activation='softmax'))            # 3-way classification: not dc, dc or paired dc
     
     model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
