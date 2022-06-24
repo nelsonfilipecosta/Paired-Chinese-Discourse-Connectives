@@ -166,8 +166,8 @@ X_test = ds_test.drop(['label'], axis=1)
 y_test = ds_test['label'].astype('int')
 
 # global parameters
-n_iter  = 100   # number of parameters sampled in randomized search
-cv      = 2     # number of cross validation folds
+n_iter  = 20    # number of parameters sampled in randomized search
+cv      = 3     # number of cross validation folds
 verbose = 1
 
 # svm specific parameters
@@ -207,3 +207,9 @@ print("Precision for Random Forest model: %.1f%%" % (sklearn.metrics.precision_s
 print("Recall for Random Forest model: %.1f%%" % (sklearn.metrics.recall_score(y_test, forest.predict(X_test))*100))
 print("F1 Score for Random Forest model: %.1f%%" % (sklearn.metrics.f1_score(y_test, forest.predict(X_test))*100))
 print("\n")
+
+# print('\n')
+# print(ds_train['label'].value_counts(dropna=False))
+# print('\n')
+# print(ds_test['label'].value_counts(dropna=False))
+# print('\n')
