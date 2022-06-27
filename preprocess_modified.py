@@ -147,8 +147,11 @@ for i in ds_list:
     df = pd.DataFrame(preprocessed_tokens, columns=ds_columns)
 
     # 0 = not dc, 1 = dc, 2 = paired dc
-    df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 2, 'Seg=I-D-Conn': 2}, inplace=True)
+    # df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 2, 'Seg=I-D-Conn': 2}, inplace=True)
+    # df.to_csv('Datasets-Modified/dataset_3way_%s.csv' % i, index=False)
 
-    df.to_csv('Datasets-Modified/dataset_%s.csv' % i, index=False)
+    # 0 = not dc, 1 = dc, 1 = paired dc
+    df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 1, 'Seg=I-D-Conn': 1}, inplace=True)
+    df.to_csv('Datasets-Modified/dataset_2way_%s.csv' % i, index=False)
 
     print("Done!")
