@@ -154,13 +154,15 @@ def forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbo
 
 
 # prepare train data
-ds_train = pd.read_csv('Datasets-Modified/dataset_train.csv', index_col=False)
+# ds_train = pd.read_csv('Datasets-Modified/dataset_3way_train.csv', index_col=False) # 3 way classification
+ds_train = pd.read_csv('Datasets-Modified/dataset_2way_train.csv', index_col=False) # 2 way classification
 ds_train.dropna(inplace=True) # why do we have NaN?
 X_train = ds_train.drop(['label'], axis=1)
 y_train = ds_train['label'].astype('int')
 
 # prepare test data
-ds_test = pd.read_csv('Datasets-Modified/dataset_test.csv', index_col=False)
+# ds_test = pd.read_csv('Datasets-Modified/dataset_3way_test.csv', index_col=False) # 3 way classification
+ds_test = pd.read_csv('Datasets-Modified/dataset_2way_test.csv', index_col=False) # 2 way classification
 ds_test.dropna(inplace=True) # why do we have NaN?
 X_test = ds_test.drop(['label'], axis=1)
 y_test = ds_test['label'].astype('int')
