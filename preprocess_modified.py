@@ -163,7 +163,7 @@ for i in models:
         else:
             window = 20 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
 
-        ds_columns = [str(x) for x in list(range(0, 100*(2*window+1)))]
+        ds_columns = [str(x) for x in list(range(0, emb_size*(2*window+1)))]
         ds_columns.append('label')
 
         print("\n")
