@@ -29,7 +29,7 @@ def svm_param_search(kernel, C, gamma, coef0, degree, n_iter, cv, verbose):
     elif kernel == 'sigmoid':
         param_distributions = {'C':C, 'gamma':gamma, 'coef0':coef0}
 
-    clf = sklearn.model_selection.RandomizedSearchCV(svm, param_distributions, n_iter=n_iter, cv=cv, verbose=verbose)
+    clf = sklearn.model_selection.RandomizedSearchCV(svm, param_distributions, n_iter=n_iter, n_jobs=cv, cv=cv, verbose=verbose)
 
     clf.fit(X_train, y_train)
 
@@ -96,7 +96,7 @@ def tree_model_selection(criterion, splitter, max_depth, n_iter, cv, verbose):
 
             tree = sklearn.tree.DecisionTreeClassifier(criterion=i, splitter=j)
             
-            clf = sklearn.model_selection.RandomizedSearchCV(tree, param_distributions, n_iter=n_iter, cv=cv, verbose=verbose)
+            clf = sklearn.model_selection.RandomizedSearchCV(tree, param_distributions, n_iter=n_iter, n_jobs=cv, cv=cv, verbose=verbose)
             
             clf.fit(X_train, y_train)
 
@@ -133,9 +133,9 @@ def forest_model_selection(criterion, n_estimators, max_depth, n_iter, cv, verbo
     for i in criterion:
         print("Random Forest: (criterion=%s)" % i)
 
-        forest = sklearn.ensemble.RandomForestClassifier(criterion=i)
+        forest = sklearn.ensemble.RandomForestClassifier(criterion=i, n_jobs=cv)
         
-        clf = sklearn.model_selection.RandomizedSearchCV(forest, param_distributions, n_iter=n_iter, cv=cv, verbose=verbose)
+        clf = sklearn.model_selection.RandomizedSearchCV(forest, param_distributions, n_iter=n_iter, n_jobs=cv, cv=cv, verbose=verbose)
         
         clf.fit(X_train, y_train)
 
@@ -168,13 +168,13 @@ X_test = ds_test.drop(['label'], axis=1)
 y_test = ds_test['label'].astype('int')
 
 # global parameters
-n_iter  = 20    # number of parameters sampled in randomized search
-cv      = 3     # number of cross validation folds
+n_iter  = 10    # number of parameters sampled in randomized search
+cv      = 4     # number of cross validation folds
 verbose = 1
 
 # svm specific parameters
 kernels = ['linear', 'rbf', 'sigmoid'] # ['linear', 'poly', 'rbf', 'sigmoid']
-c       = scipy.stats.reciprocal(1, 1000)
+c       = scipy.stats.reciprocal(1, 100)
 gamma   = scipy.stats.reciprocal(0.01, 10)
 coef0   = scipy.stats.reciprocal(0.01, 10)
 degree  = scipy.stats.randint(1, 10)
