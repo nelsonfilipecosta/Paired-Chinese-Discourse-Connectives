@@ -129,29 +129,60 @@ def preprocess(embedded_tokens, window):
     return np.hstack((feature_columns, label_column))
 
 
-window = 10 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
+print("Loading embedding models...")
 
-model = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt', binary=False)
+model_100s = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt', binary=False)
+# model_200s = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt', binary=False)
+# model_200l = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d200_v0.2.0_l.txt', binary=False)
 
+print("Done!")
+
+models = ['100s', '200s', '200l']
+windows = ['10', '20']
 ds_list = ['train', 'test', 'dev']
-ds_columns = [str(x) for x in list(range(0, 100*(2*window+1)))]
-ds_columns.append('label')
 
-for i in ds_list:
-    print("Preparing %s dataset..." % i)
+for i in models:
+    for j in windows:
 
-    raw_tokens          = read_source(filepath = 'CDTB-Modified/dzho.pdtb.cdtb_%s.tok' % i)
-    embedded_tokens     = generate_embedding(model, raw_tokens)
-    preprocessed_tokens = preprocess(embedded_tokens, window)
+        # select model
+        if i == '100s':
+            model = model_100s
+        # elif i == '200s':
+        #     model = model_200s
+        # else:
+        #     model = model_200l
 
-    df = pd.DataFrame(preprocessed_tokens, columns=ds_columns)
+        # select window
+        if j == '10':
+            window = 10 # 63.9% of the paired DCs in the CDTB have a maximum of 10 word distance
+        else:
+            window = 20 # 89.2% of the paired DCs in the CDTB have a maximum of 20 word distance
 
-    # 0 = not dc, 1 = dc, 2 = paired dc
-    # df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 2, 'Seg=I-D-Conn': 2}, inplace=True)
-    # df.to_csv('Datasets-Modified/dataset_3way_%s.csv' % i, index=False)
+        ds_columns = [str(x) for x in list(range(0, 100*(2*window+1)))]
+        ds_columns.append('label')
 
-    # 0 = not dc, 1 = dc, 1 = paired dc
-    df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 1, 'Seg=I-D-Conn': 1}, inplace=True)
-    df.to_csv('Datasets-Modified/dataset_2way_%s.csv' % i, index=False)
+        print("\n")
+        print("Embedding: %s -- Window: %s" % (i, j))
+        print("\n")
 
-    print("Done!")
+        for k in ds_list:
+            print("Preparing %s dataset..." % k)
+
+            raw_tokens          = read_source(filepath = 'CDTB-Modified/dzho.pdtb.cdtb_%s.tok' % k)
+            embedded_tokens     = generate_embedding(model, raw_tokens)
+            preprocessed_tokens = preprocess(embedded_tokens, window)
+
+            df = pd.DataFrame(preprocessed_tokens, columns=ds_columns)
+
+            # 0 = not dc, 1 = dc, 2 = paired dc
+            df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 2, 'Seg=I-D-Conn': 2}, inplace=True)
+            df.to_csv('Datasets-Modified/dataset_3way_%s_%s_%s.csv' % (i, j, k), index=False)
+
+            # 0 = not dc, 1 = dc, 1 = paired dc
+            # df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 1, 'Seg=I-D-Conn': 1}, inplace=True)
+            # df.to_csv('Datasets-Modified/dataset_2way_%s_%s_%s.csv' % (i, j, k), index=False)
+
+            print("Done!")
+            print("Class count:")
+            print(df['label'].value_counts(dropna=False))
+            print("\n")
