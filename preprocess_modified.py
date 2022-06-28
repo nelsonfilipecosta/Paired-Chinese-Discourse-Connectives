@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import tokenize
+import imblearn
+import imblearn.over_sampling
 from gensim.models import KeyedVectors
 
 
@@ -51,9 +53,9 @@ def read_source(filepath):
     return np.array(array)
 
 
-def generate_embedding(model, raw_tokens):
+def generate_embedding(model, raw_tokens, emb_size):
     '''
-    Generates a 100-dimension vector embedding for the Chinese word in each token.
+    Generates a 'emb_size'-dimension vector embedding for the Chinese word in each token.
 
     Embedding obtained from Tencent AI Lab Embedding Corpus for Chinese Words and Phrases.
     https://ai.tencent.com/ailab/nlp/en/embedding.html
@@ -65,7 +67,7 @@ def generate_embedding(model, raw_tokens):
         if token[1] in model.index_to_key:
             token = np.append(token, model[token[1]])
         else:
-            token = np.append(token, np.zeros(100, dtype=int))
+            token = np.append(token, np.zeros(emb_size, dtype=int))
         
         embedded_tokens.append(token)
 
@@ -132,12 +134,12 @@ def preprocess(embedded_tokens, window):
 print("Loading embedding models...")
 
 model_100s = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d100_v0.2.0_s.txt', binary=False)
-# model_200s = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt', binary=False)
+model_200s = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d200_v0.2.0_s.txt', binary=False)
 # model_200l = KeyedVectors.load_word2vec_format('Embeddings/tencent_ailab_embedding_zh_d200_v0.2.0_l.txt', binary=False)
 
 print("Done!")
 
-models = ['100s', '200s', '200l']
+models = ['100s', '200s'] # ['100s', '200s', '200l']
 windows = ['10', '20']
 ds_list = ['train', 'test', 'dev']
 
@@ -147,10 +149,13 @@ for i in models:
         # select model
         if i == '100s':
             model = model_100s
-        # elif i == '200s':
-        #     model = model_200s
+            emb_size = 100
+        elif i == '200s':
+            model = model_200s
+            emb_size = 200
         # else:
         #     model = model_200l
+        #     emb_size = 200
 
         # select window
         if j == '10':
@@ -169,7 +174,7 @@ for i in models:
             print("Preparing %s dataset..." % k)
 
             raw_tokens          = read_source(filepath = 'CDTB-Modified/dzho.pdtb.cdtb_%s.tok' % k)
-            embedded_tokens     = generate_embedding(model, raw_tokens)
+            embedded_tokens     = generate_embedding(model, raw_tokens, emb_size)
             preprocessed_tokens = preprocess(embedded_tokens, window)
 
             df = pd.DataFrame(preprocessed_tokens, columns=ds_columns)
@@ -186,3 +191,27 @@ for i in models:
             print("Class count:")
             print(df['label'].value_counts(dropna=False))
             print("\n")
+
+            # balance train dataset
+            if k == 'train':
+                print("Preparing balanced %s dataset..." % k)
+
+                # prepare data for resampling
+                df['label'].replace('', np.nan, inplace=True)
+                df.dropna(inplace=True)
+                X_copy = df.drop(['label'], axis=1).to_numpy(dtype=np.float64, copy=True)
+                y_copy = df['label'].to_numpy(dtype=np.int64, copy=True)
+
+                # 70% not dc, 20% dc, 10% paired dc
+                strategy = {0:50850, 1:14530, 2:7265}
+                
+                ros = imblearn.over_sampling.RandomOverSampler(sampling_strategy=strategy)
+                X_over, y_over = ros.fit_resample(X_copy, y_copy)
+
+                df_over = pd.DataFrame(np.column_stack((X_over, y_over)), columns=ds_columns)
+                df_over.to_csv('Datasets-Modified/dataset_3way_%s_%s_%s_balanced.csv' % (i, j, k), index=False)
+
+                print("Done!")
+                print("Class count:")
+                print(df_over['label'].value_counts(dropna=False))
+                print("\n")
