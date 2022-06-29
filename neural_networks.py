@@ -35,15 +35,15 @@ def generate_fnn(optimizer, loss, metrics, dropout_rate, input_shape):
 
 
 # prepare train data
-# ds_train = pd.read_csv('Datasets-Modified/dataset_3way_train.csv', index_col=False) # 3 way classification
-ds_train = pd.read_csv('Datasets-Modified/dataset_2way_train.csv', index_col=False) # 2 way classification
+# ds_train = pd.read_csv('Datasets-Modified/dataset_3way_100s_10_train.csv', index_col=False) # 3 way classification
+ds_train = pd.read_csv('Datasets-Modified/dataset_2way_100s_10_train.csv', index_col=False) # 2 way classification
 ds_train.dropna(inplace=True) # why do we have NaN?
 X_train = ds_train.drop(['label'], axis=1)
 y_train = ds_train['label'].astype('int')
 
 # prepare test data
-# ds_test = pd.read_csv('Datasets-Modified/dataset_3way_test.csv', index_col=False) # 3 way classification
-ds_test = pd.read_csv('Datasets-Modified/dataset_2way_test.csv', index_col=False) # 2 way classification
+# ds_test = pd.read_csv('Datasets-Modified/dataset_3way_100s_10_test.csv', index_col=False) # 3 way classification
+ds_test = pd.read_csv('Datasets-Modified/dataset_2way_100s_10_train.csv', index_col=False) # 2 way classification
 ds_test.dropna(inplace=True) # why do we have NaN?
 X_test = ds_test.drop(['label'], axis=1)
 y_test = ds_test['label'].astype('int')
@@ -64,11 +64,13 @@ fnn.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.2, callba
 # predict fnn
 predict = np.argmax(fnn.predict(X_test), axis=-1)
 
+# format numpy arrays before printing
+np.set_printoptions(formatter={'float': '{: 0.1f}'.format})
+
 print("\n")
-print("Accuracy for FNN model:  %.1f%%" % (sklearn.metrics.accuracy_score(y_test, predict)*100))
-print("Precision for FNN model: %.1f%%" % (sklearn.metrics.precision_score(y_test, predict, average='macro')*100))
-print("Recall for FNN model:    %.1f%%" % (sklearn.metrics.recall_score(y_test, predict, average='macro')*100))
-print("F1 Score for FNN model:  %.1f%%" % (sklearn.metrics.f1_score(y_test, predict, average='macro')*100))
+print("Precision for FNN model: ", sklearn.metrics.precision_score(y_test, predict, average=None)*100)
+print("Recall for FNN model:    ", sklearn.metrics.recall_score(y_test, predict, average=None)*100)
+print("F1 Score for FNN model:  ", sklearn.metrics.f1_score(y_test, predict, average=None)*100)
 print("\n")
 
 # accuracy: (tp + tn) / (p + n)
