@@ -1,6 +1,6 @@
 **/.DS_Store
-CDTB-Modified/*
-Datasets-Modified/*
+CDTB/*
+Datasets/*
 Dictionaries/*
 Embeddings/*
 Legacy/Embeddings/*
