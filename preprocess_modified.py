@@ -153,9 +153,9 @@ for i in models:
         elif i == '200s':
             model = model_200s
             emb_size = 200
-        # else:
-        #     model = model_200l
-        #     emb_size = 200
+        else:
+            # model = model_200l
+            emb_size = 200
 
         # select window
         if j == '10':
@@ -183,7 +183,7 @@ for i in models:
             df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 2, 'Seg=I-D-Conn': 2}, inplace=True)
             df.to_csv('Datasets-Modified/dataset_3way_%s_%s_%s.csv' % (i, j, k), index=False)
 
-            # 0 = not dc, 1 = dc, 1 = paired dc
+            # # 0 = not dc, 1 = dc, 1 = paired dc
             # df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 1, 'Seg=I-D-Conn': 1}, inplace=True)
             # df.to_csv('Datasets-Modified/dataset_2way_%s_%s_%s.csv' % (i, j, k), index=False)
 
