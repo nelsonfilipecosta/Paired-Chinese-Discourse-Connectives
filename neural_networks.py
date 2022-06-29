@@ -35,15 +35,15 @@ def generate_fnn(optimizer, loss, metrics, dropout_rate, input_shape):
 
 
 # prepare train data
-# ds_train = pd.read_csv('Datasets-Modified/dataset_3way_100s_10_train.csv', index_col=False) # 3 way classification
-ds_train = pd.read_csv('Datasets-Modified/dataset_2way_100s_10_train.csv', index_col=False) # 2 way classification
+# ds_train = pd.read_csv('Datasets/dataset_3way_100s_10_train.csv', index_col=False) # 3 way classification
+ds_train = pd.read_csv('Datasets/dataset_2way_100s_10_train.csv', index_col=False) # 2 way classification
 ds_train.dropna(inplace=True) # why do we have NaN?
 X_train = ds_train.drop(['label'], axis=1)
 y_train = ds_train['label'].astype('int')
 
 # prepare test data
-# ds_test = pd.read_csv('Datasets-Modified/dataset_3way_100s_10_test.csv', index_col=False) # 3 way classification
-ds_test = pd.read_csv('Datasets-Modified/dataset_2way_100s_10_train.csv', index_col=False) # 2 way classification
+# ds_test = pd.read_csv('Datasets/dataset_3way_100s_10_test.csv', index_col=False) # 3 way classification
+ds_test = pd.read_csv('Datasets/dataset_2way_100s_10_train.csv', index_col=False) # 2 way classification
 ds_test.dropna(inplace=True) # why do we have NaN?
 X_test = ds_test.drop(['label'], axis=1)
 y_test = ds_test['label'].astype('int')

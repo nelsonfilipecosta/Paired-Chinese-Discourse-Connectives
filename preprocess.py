@@ -173,7 +173,7 @@ for i in models:
         for k in ds_list:
             print("Preparing %s dataset..." % k)
 
-            raw_tokens          = read_source(filepath = 'CDTB-Modified/dzho.pdtb.cdtb_%s.tok' % k)
+            raw_tokens          = read_source(filepath = 'CDTB/dzho.pdtb.cdtb_%s.tok' % k)
             embedded_tokens     = generate_embedding(model, raw_tokens, emb_size)
             preprocessed_tokens = preprocess(embedded_tokens, window)
 
@@ -181,11 +181,11 @@ for i in models:
 
             # 0 = not dc, 1 = dc, 2 = paired dc
             df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 2, 'Seg=I-D-Conn': 2}, inplace=True)
-            df.to_csv('Datasets-Modified/dataset_3way_%s_%s_%s.csv' % (i, j, k), index=False)
+            df.to_csv('Datasets/dataset_3way_%s_%s_%s.csv' % (i, j, k), index=False)
 
             # # 0 = not dc, 1 = dc, 1 = paired dc
             # df['label'].replace({'_': 0, 'Seg=B-Conn': 1, 'Seg=I-Conn': 1, 'Seg=B-D-Conn': 1, 'Seg=I-D-Conn': 1}, inplace=True)
-            # df.to_csv('Datasets-Modified/dataset_2way_%s_%s_%s.csv' % (i, j, k), index=False)
+            # df.to_csv('Datasets/dataset_2way_%s_%s_%s.csv' % (i, j, k), index=False)
 
             print("Done!")
             print("Class count:")
@@ -209,7 +209,7 @@ for i in models:
                 X_over, y_over = ros.fit_resample(X_copy, y_copy)
 
                 df_over = pd.DataFrame(np.column_stack((X_over, y_over)), columns=ds_columns)
-                df_over.to_csv('Datasets-Modified/dataset_3way_%s_%s_%s_balanced.csv' % (i, j, k), index=False)
+                df_over.to_csv('Datasets/dataset_3way_%s_%s_%s_balanced.csv' % (i, j, k), index=False)
 
                 print("Done!")
                 print("Class count:")
