@@ -1,9 +1,9 @@
 **/.DS_Store
-CDTB/*
 CDTB-Modified/*
 Datasets-Modified/*
 Dictionaries/*
 Embeddings/*
+Legacy/Embeddings/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
